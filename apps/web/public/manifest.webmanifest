@@ -1,6 +1,6 @@
 {
-  "name": "DeepSeek Harness",
-  "short_name": "DSH",
+  "name": "EveryWhere Harness",
+  "short_name": "EWH",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

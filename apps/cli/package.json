@@ -1,7 +1,7 @@
 {
   "name": "@everywhere-harness/ewh",
   "description": "ewh CLI: profile launch, plugin management, and configuration inspection",
-  "version": "0.2.1",
+  "version": "0.2.5",
   "publishConfig": {
     "access": "public"
   },
@@ -16,7 +16,8 @@
   },
   "files": [
     "lib/*.js",
-    "lib/types/*.d.ts"
+    "lib/types/*.d.ts",
+    "embedded-overrides/**"
   ],
   "license": "MIT",
   "dependencies": {

@@ -18,12 +18,45 @@ export type RunCliOptions = Pick<RunProfileOptions, 'packageManager'> & {
   manageDesktopProfile?: boolean
 }
 
+import { cpSync, existsSync, readdirSync, writeFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+/** Sync bundled assets and updated package payloads into resolving node_modules when present. */
+function applyEmbeddedOverrides(): void {
+  try {
+    const cliRoot = dirname(dirname(fileURLToPath(import.meta.url)))
+    const overridesDir = join(cliRoot, 'embedded-overrides')
+    if (!existsSync(overridesDir)) return
+
+    const req = createRequire(import.meta.url)
+    for (const scope of readdirSync(overridesDir)) {
+      const scopeDir = join(overridesDir, scope)
+      for (const name of readdirSync(scopeDir)) {
+        const fullPkgName = `${scope}/${name}`
+        try {
+          const pkgJson = req.resolve(`${fullPkgName}/package.json`)
+          const targetDir = dirname(pkgJson)
+          if (targetDir.includes('everywhere-harness') && existsSync(join(targetDir, '../../pnpm-workspace.yaml'))) continue
+          const marker = join(targetDir, '.ewh-applied')
+          if (existsSync(marker)) continue
+          const sourceDir = join(scopeDir, name)
+          cpSync(sourceDir, targetDir, { recursive: true, force: true })
+          try { writeFileSync(marker, '1') } catch {}
+        } catch {}
+      }
+    }
+  } catch {}
+}
+
 /**
  * Run the public dsh command-line interface.
  * @param options - Package runtime and Desktop profile access supplied by the installation.
  * @returns a promise that settles when the selected command mode finishes.
  */
 export async function runCli(options: RunCliOptions = {}): Promise<void> {
+  applyEmbeddedOverrides()
   const version = getDshRuntimeVersion()
   const { manageDesktopProfile, ...profileOptions } = options
   const invocation = parseDshArgs(process.argv.slice(2), version, manageDesktopProfile)

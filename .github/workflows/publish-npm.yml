@@ -3,6 +3,9 @@ name: Publish to npm
 on:
   release:
     types: [published]
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       version:
@@ -58,10 +61,15 @@ jobs:
       - name: Resolve version
         run: |
           TARGET_VERSION="${{ inputs.version }}"
-          if [ -z "$TARGET_VERSION" ] && [ "${{ github.event_name }}" = "release" ]; then
-            TAG_NAME="${{ github.event.release.tag_name }}"
-            # Remove leading prefix if present (e.g. v0.2.2 -> 0.2.2)
-            TARGET_VERSION=$(echo "$TAG_NAME" | sed -E 's/^[^0-9]*([0-9]+\.[0-9]+\.[0-9]+.*)$/\1/')
+          if [ -z "$TARGET_VERSION" ]; then
+            if [ "${{ github.event_name }}" = "release" ]; then
+              TAG_NAME="${{ github.event.release.tag_name }}"
+            elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+              TAG_NAME="${GITHUB_REF#refs/tags/}"
+            fi
+            if [ -n "$TAG_NAME" ]; then
+              TARGET_VERSION=$(echo "$TAG_NAME" | sed -E 's/^[^0-9]*([0-9]+\.[0-9]+\.[0-9]+.*)$/\1/')
+            fi
           fi
 
           if [ -n "$TARGET_VERSION" ]; then
@@ -77,6 +85,11 @@ jobs:
             CURRENT=$(node -p "JSON.parse(require('node:fs').readFileSync('apps/cli/package.json', 'utf8')).version")
             echo "Publishing existing version: $CURRENT"
           fi
+
+      - name: Build Web Frontend and Client packages
+        run: |
+          pnpm run build:artifacts
+          pnpm exec tsx scripts/prepare-embedded-cli.ts
 
       - name: Build CLI package
         run: |

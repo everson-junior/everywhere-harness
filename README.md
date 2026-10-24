@@ -1,74 +1,61 @@
-# DeepSeek Harness
+# Everywhere Harness
 
-English | [中文](README.zh.md)
+Everywhere Harness (`ewh`) is an open-source, extensible AI agent harness built on an **everything-is-a-plugin** architecture and powered by [Cordis](https://github.com/cordiverse/cordis).
 
-DeepSeek Harness (`dsh`) is an open-source agent harness developed by [DeepSeek AI](https://deepseek.com).
+## Quick Start
 
-It is built on an **everything-is-a-plugin** architecture and powered by [Cordis](https://github.com/cordiverse/cordis), whose design is described in [_A Programming Paradigm for Spatiotemporal Composability_](https://arxiv.org/abs/2608.25512).
+### Run with `npm` / `npx`
 
-Documentation: [https://deepseek-harness.github.io/deepseek-harness/](https://deepseek-harness.github.io/deepseek-harness/)
-
-## Developer preview
-
-DeepSeek Harness is in _developer preview_ and iterating rapidly. **THERE WILL BE COMPATIBILITY-BREAKING CHANGES.**
-
-Review the [safety notice](SAFETY.md) before running the project.
-
-## Run
-
-### Run from `npm`
-
-Install `Node.js`, then run:
+Requires `Node.js >= 24.9.0`:
 
 ```sh
-npx @deepseek-ai/dsh web
+npx @everywhere-harness/ewh web
 ```
 
-The command starts the Web UI at `http://127.0.0.1:3080` by default and opens it in the default browser for a local launch. An SSH launch only prints the host URL because the SSH client or editor owns the local forwarded address. Pass `--no-open` to run the server without opening a browser. See [Web UI guide](docs/user/guide/index.md).
+This starts the Web UI at `http://127.0.0.1:3080` and opens it in your default browser.
+
+To run without automatically opening the browser:
+
+```sh
+npx @everywhere-harness/ewh web --no-open
+```
 
 ### Run from source
 
-To run from a repository checkout:
-
 ```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
-cd deepseek-harness
+git clone https://github.com/everson-junior/everywhere-harness.git
+cd everywhere-harness
 pnpm install
 pnpm run build
-pnpm dsh web
+pnpm ewh web
 ```
 
-`pnpm run build` prepares the repository artifacts. `pnpm dsh web` uses those built artifacts without rebuilding.
+- `pnpm run build` prepares the workspace artifacts.
+- `pnpm ewh web` launches the application from source.
 
-## Community and support
+## Profiles & Capabilities
 
-- Submit feedback or bug reports through [GitHub Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions).
-- Add the [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic to your plugin repository for discoverability.
-- Join <a href="https://discord.gg/4MrtZUhpxg">DeepSeek Harness Discord community</a>.
+Everywhere Harness uses modular profiles to support different agent runtime environments:
 
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Web Profile (`ewh web`)**: Interactive full-stack web chat and tool execution interface.
+- **Headless Profile (`ewh --profile headless "task"`)**: Executes an agent task in terminal/batch mode and exits with the result.
+- **ACP Profile (`ewh --profile acp`)**: Automation Client Protocol runner over stdio.
+- **SDK Profile (`ewh --profile sdk`)**: JSON-RPC interface for external integrations.
 
 ## Development
 
-Start with the [development guide](docs/development.md) and [architecture documentation](docs/architecture.md).
+For developers contributing to or extending Everywhere Harness:
 
-`pnpm run dev:web` builds, serves, and rebuilds client bundles on source edits in one terminal, and `make help` lists the matching Make targets for Web and Desktop; the guide's application commands section owns the full table.
+- Start with the [development guide](docs/development.md) and [architecture documentation](docs/architecture.md).
+- To run the development server with hot-reload:
+  ```sh
+  pnpm run dev:web
+  ```
 
-For agents, follow [AGENTS.md](AGENTS.md).
+## Issues & Support
 
-## Citation
-
-```bibtex
-@misc{deepseek-harness2026,
-  title={DeepSeek Harness: Everything is a Plugin},
-  author={DeepSeek-AI},
-  year={2026},
-  publisher={GitHub},
-  howpublished={\url{https://github.com/deepseek-ai/deepseek-harness}},
-}
-```
+- Submit issues or feature requests on [GitHub Issues](https://github.com/everson-junior/everywhere-harness/issues).
+- Pull requests are welcome!
 
 ## License
 

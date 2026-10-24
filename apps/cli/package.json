@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/everywhere-harness/everywhere-harness.git",
+    "url": "git+https://github.com/everson-junior/everywhere-harness.git",
     "directory": "apps/cli"
   },
   "type": "module",

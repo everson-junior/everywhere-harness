@@ -26,7 +26,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@deepseek-ai/dsh": "workspace:*"
+    "@everywhere-harness/ewh": "workspace:*"
   },
   "peerDependencies": {
     "@deepseek-ai/dsh-llm": "workspace:*",

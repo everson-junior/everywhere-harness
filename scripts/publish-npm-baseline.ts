@@ -29,7 +29,7 @@ const DEPENDENCY_SECTIONS = [
   'peerDependencies',
 ] as const
 const RELEASE_MANIFEST_NAME = 'manifest.json'
-const RELEASE_ENTRY_PACKAGE = '@deepseek-ai/dsh'
+const RELEASE_ENTRY_PACKAGE = '@everywhere-harness/ewh'
 const LATEST_DIST_TAG = 'latest'
 const POSIX_WEB_PROBE = String.raw`
 import errno, os, pty, select, signal, sys, time
@@ -255,8 +255,8 @@ class WorkspacePackageSet {
       const isVendored = manifestPath.startsWith('vendor/')
       // Vendored packages are rescoped too (vendor/README.md), so publication
       // never carries an upstream name that would squat it on the registry.
-      if (!name.startsWith('@deepseek-ai/')) {
-        throw new Error(`${manifestPath} must name an @deepseek-ai package`)
+      if (!name.startsWith('@deepseek-ai/') && !name.startsWith('@everywhere-harness/')) {
+        throw new Error(`${manifestPath} must name an @deepseek-ai or @everywhere-harness package`)
       }
       if (name === '@deepseek-ai/dsh-root') {
         throw new Error(`${manifestPath} unexpectedly selected the workspace root`)

@@ -13,4 +13,7 @@ export default defineConfig({
   fixedExtension: false,
   dts: false,
   clean: ['lib/*.js'],
+  deps: {
+    inline: ['@deepseek-ai/dsh-official-bundles'],
+  },
 })

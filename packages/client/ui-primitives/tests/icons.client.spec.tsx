@@ -215,3 +215,16 @@ describe('BrandWordmark', () => {
     expect(svg.getAttribute('viewBox')).toBe('26 0 156 24')
   })
 })
+
+describe('ensureDefaultIconSprite', () => {
+  it('automatically mounts the icon sprite in document.body when an icon renders', () => {
+    document.querySelector('svg[data-dsh-icon-sprite]')?.remove()
+    expect(document.querySelector('svg[data-dsh-icon-sprite]')).toBeNull()
+
+    render(<primitives.IconPanelLeftOutlineRegular />)
+    const sprite = document.querySelector('svg[data-dsh-icon-sprite]')
+    expect(sprite).not.toBeNull()
+    expect(sprite?.querySelector('symbol[id="dsw-icon-panel-left-outline-regular"]')).not.toBeNull()
+    expect(sprite?.querySelector('symbol[id="dsw-icon-plus-outline-medium"]')).not.toBeNull()
+  })
+})

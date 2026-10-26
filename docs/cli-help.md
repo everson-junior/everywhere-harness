@@ -23,15 +23,15 @@ Run `pnpm run gen-cli-help` to regenerate; run `pnpm run verify-cli-help` to che
 Invocations: `dsh --help`
 
 ```text
-Usage: dsh [--profile] <name> [options] [app-args...]
-       dsh plugin --profile <name> <pnpm-args...>
+Usage: ewh [--profile] <name> [options] [app-args...]
+       ewh plugin --profile <name> <pnpm-args...>
 
-dsh: boot a DeepSeek Harness profile — an ordered stack of plugin-bundle patch
-layers under your own overrides.
+ewh: boot an Everywhere Harness profile — an ordered stack of plugin-bundle
+patch layers under your own overrides.
 
 Arguments:
   args                           arguments for the booted profile's app (see:
-                                 dsh --profile <name> --help)
+                                 ewh --profile <name> --help)
 
 Options:
   -V, --version                  output the version number
@@ -47,14 +47,14 @@ Options:
                                  or --patch overlays and exit
 
 Examples:
-  dsh web                                   boot the web profile (same as: dsh --profile web)
-  dsh rescue --from-default-profile web
+  ewh web                                   boot the web profile (same as: ewh --profile web)
+  ewh rescue --from-default-profile web
                                             recreate rescue from the shipped web template, then boot it
-  dsh headless "run the tests"              answer one task, print the result, and exit
-  dsh tui --patch ./extra.yml               boot a custom profile with one extra overlay
-  dsh tui --resume <session>                arguments after the launcher flags reach the app
-  dsh web --help                            the web app's own flags and help
-  dsh plugin --profile tui add <package>    install a plugin into the tui profile
+  ewh headless "run the tests"              answer one task, print the result, and exit
+  ewh tui --patch ./extra.yml               boot a custom profile with one extra overlay
+  ewh tui --resume <session>                arguments after the launcher flags reach the app
+  ewh web --help                            the web app's own flags and help
+  ewh plugin --profile tui add <package>    install a plugin into the tui profile
 
 ```
 
@@ -64,7 +64,7 @@ Examples:
 Invocations: `dsh plugin --help`
 
 ```text
-Usage: dsh plugin [options] [args...]
+Usage: ewh plugin [options] [args...]
 
 manage a profile's plugins by forwarding the remaining arguments to pnpm in the
 profile directory
@@ -85,7 +85,7 @@ Options:
 Invocations: `dsh acp --help`, `dsh --profile acp --help`
 
 ```text
-Usage: dsh --profile acp [options]
+Usage: ewh acp [options]
 
 Serve automation clients over Agent Client Protocol stdio.
 
@@ -93,7 +93,7 @@ Options:
   -h, --help  show this help
 
 Example:
-  dsh --profile acp     serve ACP until the client disconnects
+  ewh acp     serve ACP until the client disconnects
 
 ```
 
@@ -103,7 +103,7 @@ Example:
 Invocations: `dsh headless --help`, `dsh --profile headless --help`
 
 ```text
-Usage: dsh --profile headless [options] [task...]
+Usage: ewh headless [options] [task...]
 
 Answer one task and exit; the answer goes to stdout and diagnostics to stderr.
 
@@ -125,12 +125,12 @@ Options:
   -h, --help                  show this help
 
 Examples:
-  dsh --profile headless "run the tests"          answer one task and exit
-  echo "run the tests" | dsh --profile headless   read the task from stdin
-  dsh --profile headless --json "run the tests"   emit machine-readable run events
-  dsh --profile headless --session-id session-… "continue"   resume an existing Session
-  dsh --profile headless --permission-mode workspace-write --add-dir /repo/.git "commit the fix"
-                                                        grant shared Git metadata for this task
+  ewh headless "run the tests"               answer one task and exit
+  echo "run the tests" | ewh headless        read the task from stdin
+  ewh headless --json "run the tests"        emit machine-readable run events
+  ewh headless --session-id session-… "continue"   resume an existing Session
+  ewh headless --permission-mode workspace-write --add-dir /repo/.git "commit the fix"
+                                             grant shared Git metadata for this task
 
 ```
 
@@ -140,15 +140,15 @@ Examples:
 Invocations: `dsh sdk --help`, `dsh --profile sdk --help`
 
 ```text
-Usage: dsh --profile sdk [options]
+Usage: ewh sdk [options]
 
-Serve DeepSeek Harness SDK clients over stdio JSON-RPC.
+Serve Everywhere Harness SDK clients over stdio JSON-RPC.
 
 Options:
   -h, --help  show this help
 
 Example:
-  dsh --profile sdk     serve one SDK runtime until its client disconnects
+  ewh sdk     serve one SDK runtime until its client disconnects
 
 ```
 
@@ -158,15 +158,15 @@ Example:
 Invocations: `dsh sdk-minimal --help`, `dsh --profile sdk-minimal --help`
 
 ```text
-Usage: dsh --profile sdk-minimal [options]
+Usage: ewh sdk-minimal [options]
 
-Serve DeepSeek Harness SDK clients over stdio JSON-RPC.
+Serve Everywhere Harness SDK clients over stdio JSON-RPC.
 
 Options:
   -h, --help  show this help
 
 Example:
-  dsh --profile sdk-minimal     serve one SDK runtime until its client disconnects
+  ewh sdk-minimal     serve one SDK runtime until its client disconnects
 
 ```
 
@@ -176,9 +176,9 @@ Example:
 Invocations: `dsh web --help`, `dsh --profile web --help`
 
 ```text
-Usage: dsh --profile web [options]
+Usage: ewh web [options]
 
-Serve the DeepSeek Harness browser UI.
+Serve the EveryWhere Harness browser UI.
 
 Options:
   --host <host>                  bind address: one concrete IPv4 or IPv6 literal
@@ -199,13 +199,13 @@ Options:
   -h, --help                     show this help
 
 Examples:
-  dsh --profile web                          serve on the composed host and port
-  dsh --profile web --no-open                serve without opening a browser
-  dsh --profile web --port 8080              serve on another port
-  dsh --profile web --host 10.0.0.7          bind one local interface address
-  dsh --profile web --public-url https://app.example/ui/ --trusted-host app.example
+  ewh web                                    serve on the composed host and port
+  ewh web --no-open                          serve without opening a browser
+  ewh web --port 8080                        serve on another port
+  ewh web --host 10.0.0.7                    bind one local interface address
+  ewh web --public-url https://app.example/ui/ --trusted-host app.example
                                              advertise a prefix-stripping HTTPS proxy entry and admit its authority
-  dsh --profile web --tls-cert ./server-chain.pem --tls-key ./server-key.pem
+  ewh web --tls-cert ./server-chain.pem --tls-key ./server-key.pem
                                              serve HTTPS with an existing certificate and key
 
 ```

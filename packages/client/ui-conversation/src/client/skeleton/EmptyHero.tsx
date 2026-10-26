@@ -4,7 +4,7 @@
 import { useState } from 'react'
 import type { ReactNode, RefObject } from 'react'
 import {
-  FISH_LOGO_PATH, FISH_LOGO_VIEWBOX, IconChevronDownOutlineRegular, IconFolderCloseRegular, IconFolderOpenRegular,
+  IconChevronDownOutlineRegular, IconFolderCloseRegular, IconFolderOpenRegular,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { workspaceTitleOf } from '@deepseek-ai/dsh-util-workspace-path'
 import type { ConversationContentProps } from '../contract/slots.ts'
@@ -71,56 +71,199 @@ export interface HeroShellProps {
   children?: ReactNode
 }
 
-/* Hover swim morph targets: the resting FISH_LOGO_PATH with weighted
-   regional deformation baked in (generated programmatically — parse the
-   path's absolute M/C/L/Z commands, displace points with smoothstep falloff
-   weights, emit the same command structure so SMIL can interpolate `d`
-   between them). Tail: rotation about (15.6, 5.2) with weight growing toward
-   the tail tip (x>15, y<8.5) — UP -7°, DOWN +6°. Mouth/fin swoosh: a bend,
-   not a rotation — vertical lift with weight-squared falloff from the body
-   anchor (14.1, 15.0), so the near end stays seated and the mouth corner
-   sweeps most, a smile lift (UP -0.7 units at the tip, DOWN +0.5). The eye
-   subpaths carry zero weight and stay fixed. */
-const HERO_SWIM_UP_PATH =
-  'M22.403 0.567C22.145 0.477 22.068 0.718 21.939 0.85C21.895 0.893 21.86 0.947 21.824 0.997C21.515 1.421 21.13 1.721 20.591 1.77C19.829 1.867 19.221 2.244 18.712 2.958C18.535 2.227 18.116 1.839 17.516 1.626C17.203 1.506 16.887 1.379 16.663 1.064C16.508 0.839 16.462 0.581 16.383 0.329C16.332 0.176 16.283 0.02 16.121 -0.002C15.944 -0.029 15.875 0.133 15.805 0.269C15.52 0.822 15.408 1.43 15.42 2.046C15.449 3.432 16.031 4.532 17.202 5.274C17.337 5.356 17.374 5.445 17.335 5.582C17.261 5.862 17.169 6.134 17.086 6.413C17.032 6.59 16.952 6.63 16.764 6.558C16.118 6.301 15.562 5.909 15.074 5.433C14.248 4.633 13.5 3.751 12.568 3.06C12.349 2.898 12.13 2.748 11.903 2.605C10.952 1.682 12.028 0.923 12.277 0.833C12.537 0.739 12.367 0.416 11.526 0.42C10.684 0.424 9.914 0.706 8.933 1.081C8.789 1.138 8.638 1.179 8.484 1.213C7.593 1.044 6.668 1.006 5.702 1.115C3.883 1.318 2.43 2.178 1.362 3.646C0.079 5.41 -0.223 7.415 0.147 9.506C0.535 11.71 1.66 13.535 3.389 14.962C5.181 16.441 7.246 17.166 9.601 17.027C11.032 16.944 12.624 16.753 14.421 15.232C14.874 15.458 15.35 15.548 16.138 15.615C16.746 15.672 17.331 15.585 17.784 15.491C18.493 15.341 18.444 14.684 18.188 14.564C16.108 13.595 16.565 13.989 16.15 13.67C17.206 12.42 18.82 10.198 19.363 7.086C19.421 6.709 19.484 6.171 19.469 5.866C19.458 5.681 19.493 5.604 19.681 5.556C20.199 5.412 20.691 5.172 21.125 4.806C22.366 3.824 22.758 2.554 22.708 1.1C22.7 0.878 22.649 0.654 22.403 0.567ZM11.175 14.451C9.159 12.726 8.182 12.088 7.778 12.067C7.401 12.047 7.469 12.505 7.552 12.807C7.639 13.103 7.752 13.313 7.91 13.581C8.02 13.758 8.095 14.01 7.801 14.16C7.152 14.487 6.023 13.806 5.97 13.772C4.657 12.85 3.559 11.766 2.785 10.369C2.037 9.025 1.603 7.583 1.532 6.044C1.513 5.672 1.622 5.541 1.992 5.473C2.479 5.383 2.981 5.364 3.468 5.436C5.525 5.736 7.276 6.675 8.744 8.323C9.582 9.299 10.216 10.425 10.869 11.496C11.563 12.592 12.31 13.603 13.262 14.414C13.598 14.696 13.866 14.91 14.123 15.068C13.349 15.154 12.058 15.167 11.175 14.452L11.175 14.451ZM12.141 8.26C12.141 8.095 12.273 7.963 12.439 7.963C12.476 7.963 12.511 7.971 12.541 7.982C12.582 7.997 12.62 8.019 12.65 8.053C12.704 8.106 12.733 8.181 12.733 8.26C12.733 8.425 12.601 8.556 12.435 8.556C12.27 8.556 12.141 8.425 12.141 8.26ZM15.142 9.799C14.949 9.878 14.757 9.945 14.572 9.953C14.284 9.968 13.972 9.851 13.802 9.709C13.537 9.487 13.348 9.363 13.27 8.977C13.236 8.812 13.255 8.556 13.284 8.41C13.352 8.094 13.277 7.892 13.055 7.708C12.873 7.558 12.643 7.516 12.39 7.516C12.296 7.516 12.209 7.475 12.145 7.441C12.039 7.389 11.952 7.257 12.035 7.096C12.062 7.043 12.19 6.916 12.22 6.893C12.563 6.698 12.96 6.762 13.326 6.908C13.665 7.047 13.922 7.302 14.292 7.663C14.669 8.098 14.738 8.218 14.953 8.545C15.123 8.801 15.277 9.063 15.383 9.364C15.447 9.551 15.364 9.705 15.142 9.799Z'
-const HERO_SWIM_DOWN_PATH =
-  'M23.271 2.216C23.039 2.071 22.91 2.287 22.755 2.388C22.703 2.42 22.656 2.464 22.61 2.505C22.214 2.848 21.771 3.054 21.225 2.956C20.412 2.784 19.68 2.919 19.005 3.435C18.92 2.663 18.493 2.157 17.808 1.798C17.446 1.621 17.08 1.449 16.83 1.111C16.656 0.872 16.611 0.612 16.524 0.354C16.469 0.198 16.414 0.039 16.223 0.009C16.017 -0.024 15.936 0.137 15.856 0.271C15.539 0.822 15.418 1.43 15.429 2.046C15.454 3.432 16.041 4.538 17.196 5.36C17.325 5.456 17.356 5.547 17.312 5.674C17.229 5.936 17.134 6.191 17.051 6.454C16.999 6.623 16.921 6.659 16.738 6.58C16.107 6.306 15.56 5.909 15.074 5.433C14.248 4.633 13.5 3.751 12.568 3.06C12.349 2.898 12.13 2.748 11.903 2.605C10.952 1.682 12.028 0.923 12.277 0.833C12.537 0.739 12.367 0.416 11.526 0.42C10.684 0.424 9.914 0.706 8.933 1.081C8.789 1.138 8.638 1.179 8.484 1.213C7.593 1.044 6.668 1.006 5.702 1.115C3.883 1.318 2.43 2.178 1.362 3.646C0.079 5.41 -0.223 7.415 0.147 9.506C0.535 11.71 1.66 13.535 3.389 14.962C5.181 16.441 7.246 17.166 9.601 17.027C11.032 16.944 12.624 16.753 14.421 15.232C14.874 15.458 15.35 15.548 16.138 15.615C16.746 15.672 17.331 15.585 17.784 15.491C18.493 15.341 18.444 14.684 18.188 14.564C16.108 13.595 16.565 13.989 16.15 13.67C17.206 12.42 18.82 10.198 19.278 7.246C19.318 6.948 19.375 6.534 19.371 6.293C19.371 6.145 19.411 6.092 19.597 6.098C20.113 6.109 20.619 6.051 21.096 5.891C22.503 5.375 23.169 4.232 23.448 2.804C23.49 2.586 23.491 2.356 23.271 2.216ZM11.175 14.49C9.159 13.005 8.182 12.567 7.778 12.621C7.401 12.673 7.469 13.087 7.552 13.354C7.639 13.619 7.752 13.797 7.91 14.024C8.02 14.175 8.095 14.406 7.801 14.609C7.152 15.063 6.023 14.63 5.97 14.609C4.657 13.941 3.559 12.965 2.785 11.569C2.037 10.225 1.603 8.783 1.532 7.244C1.513 6.872 1.622 6.741 1.992 6.673C2.479 6.583 2.981 6.564 3.468 6.636C5.525 6.936 7.276 7.843 8.744 9.163C9.582 9.888 10.216 10.783 10.869 11.679C11.563 12.659 12.31 13.617 13.262 14.415C13.598 14.696 13.866 14.91 14.123 15.068C13.349 15.155 12.058 15.177 11.175 14.491L11.175 14.49ZM12.141 8.26C12.141 8.095 12.273 7.963 12.439 7.963C12.476 7.963 12.511 7.971 12.541 7.982C12.582 7.997 12.62 8.019 12.65 8.053C12.704 8.106 12.733 8.181 12.733 8.26C12.733 8.425 12.601 8.556 12.435 8.556C12.27 8.556 12.141 8.425 12.141 8.26ZM15.142 9.799C14.949 9.878 14.757 9.945 14.572 9.953C14.284 9.968 13.972 9.851 13.802 9.709C13.537 9.487 13.348 9.363 13.27 8.977C13.236 8.812 13.255 8.556 13.284 8.41C13.352 8.094 13.277 7.892 13.055 7.708C12.873 7.558 12.643 7.516 12.39 7.516C12.296 7.516 12.209 7.475 12.145 7.441C12.039 7.389 11.952 7.257 12.035 7.096C12.062 7.043 12.19 6.916 12.22 6.893C12.563 6.698 12.96 6.762 13.326 6.908C13.665 7.047 13.922 7.302 14.292 7.663C14.669 8.098 14.738 8.218 14.953 8.545C15.123 8.801 15.277 9.063 15.383 9.364C15.447 9.551 15.364 9.705 15.142 9.799Z'
-
 /**
- * The hero fish (34px wide), static at rest. Hovering swims the whale in
- * place: a gentle head-up sway (CSS, on the hitbox hover) while the body
- * itself morphs — SMIL interpolates `d` through the tail-up and tail-down
- * targets on the same 1.6s period, so the tail wags and the fin flutters in
- * real curve deformation. Decorative — hidden from the accessibility tree;
- * reduced motion keeps the static filled logo on hover (sampled at
- * mouseenter; a mid-hover preference change takes effect on the next enter).
+ * The hero brand mark (34px), static at rest with gentle heartbeat pulse on hover.
+ * Decorative — hidden from the accessibility tree.
  * @param props.hovering - driven by the hitbox parent's pointer state.
- * @returns the fish svg element.
+ * @returns the heartbeat svg element.
  */
 function HeroFish({ hovering }: { hovering: boolean }) {
   return (
-    <svg
-      className={css.fish}
-      width={34}
-      height={(34 * FISH_LOGO_VIEWBOX.height) / FISH_LOGO_VIEWBOX.width}
-      viewBox={`0 0 ${FISH_LOGO_VIEWBOX.width} ${FISH_LOGO_VIEWBOX.height}`}
-      fill="none"
-      aria-hidden="true"
-    >
-      <path d={FISH_LOGO_PATH} fill="currentColor">
-        {hovering && (
-          <animate
-            attributeName="d"
-            values={`${FISH_LOGO_PATH};${HERO_SWIM_UP_PATH};${FISH_LOGO_PATH};${HERO_SWIM_DOWN_PATH};${FISH_LOGO_PATH}`}
-            keyTimes="0;0.35;0.55;0.75;1"
-            calcMode="spline"
-            keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1"
-            dur="1.6s"
-            repeatCount="indefinite"
-          />
-        )}
-      </path>
-    </svg>
+    <>
+      <svg
+        className={`${css.fish}${hovering ? ` ${css.fishHovering}` : ''}`}
+        width={34}
+        height={34}
+        viewBox="0 0 800 800"
+        fill="none"
+        aria-hidden="true"
+      >
+        <defs>
+          {/* Engrenagem Pequena Reutilizável */}
+          <g id="hero-gear-small">
+            <circle cx="0" cy="0" r="24" fill="none" stroke="currentColor" strokeWidth="14" />
+            <g fill="currentColor">
+              <rect x="-7" y="-38" width="14" height="16" rx="3" />
+              <rect x="-7" y="22" width="14" height="16" rx="3" />
+              <rect x="-38" y="-7" width="16" height="14" rx="3" />
+              <rect x="22" y="-7" width="16" height="14" rx="3" />
+              <rect x="-7" y="-38" width="14" height="16" rx="3" transform="rotate(45)" />
+              <rect x="-7" y="22" width="14" height="16" rx="3" transform="rotate(45)" />
+              <rect x="-38" y="-7" width="16" height="14" rx="3" transform="rotate(45)" />
+              <rect x="22" y="-7" width="16" height="14" rx="3" transform="rotate(45)" />
+            </g>
+          </g>
+
+          {/* Máscara para vazar os detalhes internos da metade esquerda do coração */}
+          <mask id="hero-heart-left-cutout">
+            <rect width="800" height="800" fill="white" />
+
+            {/* Recorte da Engrenagem Grande Interna */}
+            <g transform="translate(256, 312)">
+              <circle cx="0" cy="0" r="44" fill="none" stroke="black" strokeWidth="20" />
+              <circle cx="0" cy="0" r="16" fill="black" />
+              <g fill="black">
+                <rect x="-11" y="-68" width="22" height="24" rx="4" />
+                <rect x="-11" y="44" width="22" height="24" rx="4" />
+                <rect x="-68" y="-11" width="24" height="22" rx="4" />
+                <rect x="44" y="-11" width="24" height="22" rx="4" />
+                <rect x="-11" y="-68" width="22" height="24" rx="4" transform="rotate(45)" />
+                <rect x="-11" y="44" width="22" height="24" rx="4" transform="rotate(45)" />
+                <rect x="-68" y="-11" width="24" height="22" rx="4" transform="rotate(45)" />
+                <rect x="44" y="-11" width="24" height="22" rx="4" transform="rotate(45)" />
+              </g>
+            </g>
+
+            {/* Recorte da Engrenagem Pequena Interna */}
+            <g transform="translate(264, 458) scale(0.85)">
+              <circle cx="0" cy="0" r="24" fill="none" stroke="black" strokeWidth="14" />
+              <g fill="black">
+                <rect x="-7" y="-38" width="14" height="16" rx="3" />
+                <rect x="-7" y="22" width="14" height="16" rx="3" />
+                <rect x="-38" y="-7" width="16" height="14" rx="3" />
+                <rect x="22" y="-7" width="16" height="14" rx="3" />
+                <rect x="-7" y="-38" width="14" height="16" rx="3" transform="rotate(45)" />
+                <rect x="-7" y="22" width="14" height="16" rx="3" transform="rotate(45)" />
+                <rect x="-38" y="-7" width="16" height="14" rx="3" transform="rotate(45)" />
+                <rect x="22" y="-7" width="16" height="14" rx="3" transform="rotate(45)" />
+              </g>
+            </g>
+
+            {/* Recorte das Trilhas Internas Esquerda */}
+            <polyline points="165,408 212,408" fill="none" stroke="black" strokeWidth="14" strokeLinecap="round" />
+            <circle cx="228" cy="408" r="13" fill="none" stroke="black" strokeWidth="12" />
+            <polyline points="242,408 282,408 298,395 322,395" fill="none" stroke="black" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
+
+            <polyline points="330,212 330,248" fill="none" stroke="black" strokeWidth="14" strokeLinecap="round" />
+            <circle cx="330" cy="262" r="12" fill="none" stroke="black" strokeWidth="12" />
+            <polyline points="342,265 365,288 365,328" fill="none" stroke="black" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
+
+            {/* Recorte da Engrenagem Central sobre a metade esquerda */}
+            <circle cx="398" cy="395" r="88" fill="black" />
+          </mask>
+
+          {/* Máscara para vazar os 3 pontos do balão de conversação */}
+          <mask id="hero-chat-cutout">
+            <rect width="800" height="800" fill="white" />
+            <circle cx="558" cy="576" r="18" fill="black" />
+            <circle cx="608" cy="576" r="18" fill="black" />
+            <circle cx="658" cy="576" r="18" fill="black" />
+          </mask>
+        </defs>
+
+        {/* Órbitas Atômicas Animadas */}
+        <g className={css.atomOrbit1}>
+          <ellipse cx="398" cy="395" rx="310" ry="120" transform="rotate(30 398 395)" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray="14 10" opacity="0.45" />
+          <circle cx="666" cy="550" r="14" fill="currentColor" />
+          <circle cx="130" cy="240" r="10" fill="currentColor" opacity="0.8" />
+        </g>
+
+        <g className={css.atomOrbit2}>
+          <ellipse cx="398" cy="395" rx="305" ry="115" transform="rotate(-35 398 395)" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray="16 12" opacity="0.4" />
+          <circle cx="148" cy="570" r="13" fill="currentColor" />
+          <circle cx="648" cy="220" r="11" fill="currentColor" opacity="0.85" />
+        </g>
+
+        <g className={css.atomOrbit3}>
+          <ellipse cx="398" cy="395" rx="290" ry="110" transform="rotate(85 398 395)" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray="12 8" opacity="0.35" />
+          <circle cx="372" cy="106" r="12" fill="currentColor" />
+          <circle cx="424" cy="684" r="12" fill="currentColor" opacity="0.9" />
+        </g>
+
+        {/* Metade Esquerda do Coração (Preenchida e Vazada) */}
+        <path
+          d="M 398 265 C 365 190, 265 170, 200 225 C 130 285, 135 395, 255 528 L 345 452 L 398 395 Z"
+          fill="currentColor"
+          stroke="currentColor"
+          strokeWidth="12"
+          strokeLinejoin="round"
+          mask="url(#hero-heart-left-cutout)"
+        />
+
+        {/* Lado Direito e Inferior do Coração (Circuitos) */}
+        <path d="M 398 265 C 430 195, 520 175, 588 210" fill="none" stroke="currentColor" strokeWidth="18" strokeLinecap="round" />
+        <path d="M 628 245 C 685 335, 650 455, 535 562 L 398 662 L 292 568" fill="none" stroke="currentColor" strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
+
+        {/* Trilhas Verticais na Ponta Inferior */}
+        <line x1="398" y1="470" x2="398" y2="652" stroke="currentColor" strokeWidth="15" strokeLinecap="round" />
+        <line x1="360" y1="475" x2="360" y2="520" stroke="currentColor" strokeWidth="13" strokeLinecap="round" />
+        <circle cx="360" cy="534" r="12" fill="none" stroke="currentColor" strokeWidth="10" />
+        <line x1="360" y1="548" x2="360" y2="625" stroke="currentColor" strokeWidth="13" strokeLinecap="round" />
+        <polyline points="315,530 315,585" fill="none" stroke="currentColor" strokeWidth="13" strokeLinecap="round" />
+
+        <line x1="434" y1="475" x2="434" y2="520" stroke="currentColor" strokeWidth="13" strokeLinecap="round" />
+        <circle cx="434" cy="534" r="12" fill="none" stroke="currentColor" strokeWidth="10" />
+        <line x1="434" y1="548" x2="434" y2="625" stroke="currentColor" strokeWidth="13" strokeLinecap="round" />
+        <polyline points="472,600 472,532 490,515" fill="none" stroke="currentColor" strokeWidth="13" strokeLinecap="round" strokeLinejoin="round" />
+
+        {/* Trilhas Superiores e Laterais Direitas */}
+        <polyline points="455,212 455,268 428,302" fill="none" stroke="currentColor" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points="494,200 494,250" fill="none" stroke="currentColor" strokeWidth="14" strokeLinecap="round" />
+        <circle cx="494" cy="264" r="13" fill="none" stroke="currentColor" strokeWidth="10" />
+        <polyline points="484,274 452,315" fill="none" stroke="currentColor" strokeWidth="14" strokeLinecap="round" />
+        <circle cx="546" cy="242" r="16" fill="currentColor" />
+
+        {/* Trilhas Horizontais Direitas */}
+        <polyline points="485,382 555,382 588,350" fill="none" stroke="currentColor" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="598" cy="340" r="12" fill="none" stroke="currentColor" strokeWidth="10" />
+        <polyline points="485,416 595,416" fill="none" stroke="currentColor" strokeWidth="14" strokeLinecap="round" />
+        <circle cx="610" cy="416" r="13" fill="none" stroke="currentColor" strokeWidth="10" />
+
+        {/* Engrenagem Direita Inferior */}
+        <g transform="translate(508, 476) scale(1.08)">
+          <use href="#hero-gear-small" />
+        </g>
+
+        {/* Engrenagem Central */}
+        <g transform="translate(398, 395)">
+          <g fill="currentColor">
+            <rect x="-15" y="-84" width="30" height="28" rx="5" />
+            <rect x="-15" y="56" width="30" height="28" rx="5" />
+            <rect x="-84" y="-15" width="28" height="30" rx="5" />
+            <rect x="56" y="-15" width="28" height="30" rx="5" />
+            <rect x="-15" y="-84" width="30" height="28" rx="5" transform="rotate(45)" />
+            <rect x="-15" y="56" width="30" height="28" rx="5" transform="rotate(45)" />
+            <rect x="-84" y="-15" width="28" height="30" rx="5" transform="rotate(45)" />
+            <rect x="56" y="-15" width="28" height="30" rx="5" transform="rotate(45)" />
+          </g>
+          <circle cx="0" cy="0" r="62" fill="none" stroke="currentColor" strokeWidth="24" />
+          <circle cx="0" cy="0" r="30" fill="none" stroke="currentColor" strokeWidth="12" />
+        </g>
+
+        {/* Balão de Conversação (Inferior Direito) */}
+        <path
+          d="M 625 468 L 668 468 C 708 468, 730 495, 730 538 L 730 605 C 730 638, 708 658, 682 664 L 682 726 L 605 668 L 535 668 C 505 668, 482 648, 474 625 Z"
+          fill="currentColor"
+          stroke="currentColor"
+          strokeWidth="12"
+          strokeLinejoin="round"
+          mask="url(#hero-chat-cutout)"
+        />
+      </svg>
+      {hovering && (
+        <span className={css.floatingHearts} aria-hidden="true">
+          <svg className={`${css.floatingHeart} ${css.floatingHeart1}`} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+          <svg className={`${css.floatingHeart} ${css.floatingHeart2}`} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+          <svg className={`${css.floatingHeart} ${css.floatingHeart3}`} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+        </span>
+      )}
+    </>
   )
 }
 

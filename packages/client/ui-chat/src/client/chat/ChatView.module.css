@@ -322,32 +322,45 @@
   overflow: hidden;
 }
 
+@keyframes running-heart-pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.85;
+  }
+  14% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  28% {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+  42% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.9);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.85;
+  }
+}
+
 .runningWhaleAnimated {
-  display: none;
+  display: block;
   position: absolute;
   inset: 0;
+  animation: running-heart-pulse 1.2s ease-in-out infinite;
+  transform-origin: 50% 50%;
 }
 
 .runningWhaleStill {
-  display: initial;
+  display: none;
 }
 
-@supports (mask-mode: alpha) and (mask-image: url('')) {
-  @media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
-    .runningWhaleAnimated {
-      display: block;
-      background: currentColor;
-      mask: url('../assets/running-whale@2x.png') center / 100% 100% no-repeat;
-      mask-mode: alpha;
-      /* Keep animated-mask repaints on an icon-sized composited layer. */
-      will-change: transform;
-    }
-
-    .runningWhaleStill {
-      display: none;
-    }
-  }
-}
 
 .openError {
   color: var(--dsw-alias-state-error-primary);

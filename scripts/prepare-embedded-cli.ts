@@ -34,6 +34,14 @@ const mappings: Array<{ source: string; target: string }> = [
     source: resolve(root, 'packages/core/system-prompt/lib'),
     target: resolve(targetBase, 'dsh-system-prompt/lib'),
   },
+  {
+    source: resolve(root, 'packages/client/ui-theme/lib'),
+    target: resolve(targetBase, 'dsh-client-ui-theme/lib'),
+  },
+  {
+    source: resolve(root, 'packages/client/ui-conversation/lib'),
+    target: resolve(targetBase, 'dsh-client-ui-conversation/lib'),
+  },
 ]
 
 function cleanUnneededFiles(dir: string): void {

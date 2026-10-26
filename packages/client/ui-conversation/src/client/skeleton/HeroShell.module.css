@@ -75,48 +75,182 @@
   white-space: nowrap;
 }
 
-/* Keep hover detection on a stationary box while the mark moves within it;
-   hover rules target the hitbox so a slot-occupant mark swims too. */
+/* Keep hover detection on a stationary box while the mark moves within it */
 .fishHitbox {
+  position: relative;
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
-/* The swim morph's curves poke slightly past the viewBox edges, so clipping
-   would slice the tail mid-wag. The hero mark stays in the same primary ink
-   as its headline. */
+/* The hero mark stays in the same primary ink as its headline. */
 .fish {
   display: block;
+  width: 52px;
+  height: 52px;
   overflow: visible;
-  transform-origin: 50% 60%;
+  transform-origin: 50% 50%;
   color: var(--dsw-alias-label-primary);
+  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-/* Hover swim: a slow continuous sway about the body center — the head
-   (left) lifts as the whale rises, then settles back with a small
-   counter-tilt, like treading water. Negative rotation = head up (the head
-   is the left half; origin 50% 60%). */
-@keyframes hero-fish-swim {
-  0%,
-  100% {
-    transform: none;
+@keyframes hero-heartbeat {
+  0% {
+    transform: scale(1);
   }
-
-  35% {
-    transform: rotate(-4deg) translate(-0.4px, -0.9px);
+  14% {
+    transform: scale(1.14);
   }
-
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.14);
+  }
   70% {
-    transform: rotate(1.6deg) translate(0.3px, 0.2px);
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .fishHitbox:hover .fish {
-    animation: hero-fish-swim 1.6s ease-in-out infinite;
+    animation: hero-heartbeat 1.2s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(255, 65, 108, 0.45));
   }
+}
+
+/* 3 pequenos corações flutuando ao passar o mouse */
+.floatingHearts {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.floatingHeart {
+  position: absolute;
+  fill: #ff3366;
+  color: #ff3366;
+  filter: drop-shadow(0 2px 5px rgba(255, 51, 102, 0.5));
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+}
+
+.floatingHeart1 {
+  width: 14px;
+  height: 14px;
+  animation: float-heart-1 1.5s ease-out infinite;
+}
+
+.floatingHeart2 {
+  width: 11px;
+  height: 11px;
+  animation: float-heart-2 1.5s ease-out infinite 0.25s;
+}
+
+.floatingHeart3 {
+  width: 13px;
+  height: 13px;
+  animation: float-heart-3 1.5s ease-out infinite 0.5s;
+}
+
+@keyframes float-heart-1 {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.3) rotate(0deg);
+  }
+  20% {
+    opacity: 0.95;
+    transform: translate(-90%, -24px) scale(1) rotate(-12deg);
+  }
+  80% {
+    opacity: 0.8;
+    transform: translate(-130%, -46px) scale(1.05) rotate(-20deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-150%, -60px) scale(0.8) rotate(-25deg);
+  }
+}
+
+@keyframes float-heart-2 {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.3) rotate(0deg);
+  }
+  20% {
+    opacity: 0.95;
+    transform: translate(-40%, -26px) scale(1) rotate(6deg);
+  }
+  80% {
+    opacity: 0.8;
+    transform: translate(-30%, -52px) scale(1.05) rotate(12deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-20%, -68px) scale(0.75) rotate(16deg);
+  }
+}
+
+@keyframes float-heart-3 {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.3) rotate(0deg);
+  }
+  20% {
+    opacity: 0.95;
+    transform: translate(20%, -22px) scale(1) rotate(15deg);
+  }
+  80% {
+    opacity: 0.8;
+    transform: translate(50%, -44px) scale(1.1) rotate(22deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(70%, -58px) scale(0.8) rotate(30deg);
+  }
+}
+
+/* Animação contínua das órbitas atômicas e átomos girando em torno do coração */
+@keyframes orbit-spin-cw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit-spin-ccw {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.atomOrbit1 {
+  transform-origin: 398px 395px;
+  animation: orbit-spin-cw 14s linear infinite;
+}
+
+.atomOrbit2 {
+  transform-origin: 398px 395px;
+  animation: orbit-spin-ccw 10s linear infinite;
+}
+
+.atomOrbit3 {
+  transform-origin: 398px 395px;
+  animation: orbit-spin-cw 18s linear infinite;
 }
 
 /* Workspace row sits 12px above the input card (figma y80 → y112). */

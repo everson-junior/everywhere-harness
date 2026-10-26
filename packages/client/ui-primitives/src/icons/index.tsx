@@ -5,7 +5,7 @@
  * sprite that ui-theme maintains, so a theme can replace the artwork without
  * touching callers and the artwork inherits `currentColor` and CSS variables.
  */
-import { ICON_ARTWORK, iconSymbolId, type IconGlyph, type IconWeight } from './artwork.ts'
+import { ICON_ARTWORK, ICON_SYMBOLS, iconSymbolId, type IconGlyph, type IconWeight } from './artwork.ts'
 import type { IconProps } from './props.ts'
 
 export type { IconProps } from './props.ts'
@@ -14,14 +14,50 @@ export { ICON_MEDIUM_STROKE, ICON_REGULAR_STROKE, ICON_SYMBOLS, type IconSymbolI
 /** Shared shield contour used by composite icons outside this module. */
 export const SHIELD_OUTLINE_PATH = 'M6.80132 2.14853C7.70663 1.80917 8.70422 1.80919 9.60952 2.14859L14.1296 3.84317V7.11961C14.1296 11.6089 10.7615 13.5975 8.20543 14.5779C5.64931 13.5975 2.28052 11.6089 2.28052 7.11961V3.84317L6.80132 2.14853Z'
 
+const SVG_NS = 'http://www.w3.org/2000/svg'
+const DROPPED_ATTRIBUTES = new Set(['width', 'height', 'xmlns', 'class', 'aria-hidden'])
+
+/**
+ * Ensure default icon sprite is mounted in the document.
+ * If ui-theme has not yet mounted (or is an older host), this guarantees all icons render.
+ */
+export function ensureDefaultIconSprite(): void {
+  if (typeof document === 'undefined' || !document.body) return
+  if (document.querySelector('svg[data-dsh-icon-sprite]')) return
+  const sprite = document.createElementNS(SVG_NS, 'svg')
+  sprite.setAttribute('aria-hidden', 'true')
+  sprite.setAttribute('data-dsh-icon-sprite', '')
+  sprite.style.cssText = 'position: absolute; width: 0; height: 0; overflow: hidden'
+  for (const [id, markup] of Object.entries(ICON_SYMBOLS)) {
+    const root = new DOMParser().parseFromString(markup, 'image/svg+xml').documentElement
+    const symbol = document.createElementNS(SVG_NS, 'symbol')
+    for (const { name, value } of root.attributes) if (!DROPPED_ATTRIBUTES.has(name)) symbol.setAttribute(name, value)
+    symbol.id = id
+    symbol.append(...[...root.childNodes].map(node => document.importNode(node, true)))
+    sprite.append(symbol)
+  }
+  document.body.prepend(sprite)
+}
+
+if (typeof window !== 'undefined') {
+  if (typeof document !== 'undefined' && document.body) {
+    ensureDefaultIconSprite()
+  } else if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', ensureDefaultIconSprite, { once: true })
+  }
+}
+
 function productIcon(glyph: IconGlyph, weight: IconWeight): (props: IconProps) => React.JSX.Element {
   const { size: defaultSize, aspect: [width, height] = [1, 1] }: { size: number; aspect?: readonly [number, number] } = ICON_ARTWORK[glyph]
   const id = iconSymbolId(glyph, weight)
-  return ({ size = defaultSize, className }: IconProps) => (
-    <svg width={(size * width) / height} height={size} className={className} data-icon={id} aria-hidden="true">
-      <use href={`#${id}`} />
-    </svg>
-  )
+  return ({ size = defaultSize, className }: IconProps) => {
+    ensureDefaultIconSprite()
+    return (
+      <svg width={(size * width) / height} height={size} className={className} data-icon={id} aria-hidden="true">
+        <use href={`#${id}`} />
+      </svg>
+    )
+  }
 }
 
 /** Regular one-pixel IconNewChatOutline artwork. */

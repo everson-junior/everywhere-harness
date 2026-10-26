@@ -50,6 +50,8 @@ export function installIconSprite(ctx: Context, icons: IconReplacements | undefi
   }
   apply(icons)
   ctx.effect(() => {
+    const existing = document.querySelector('svg[data-dsh-icon-sprite]')
+    if (existing !== null && existing !== sprite) existing.remove()
     document.body.prepend(sprite)
     return () => { sprite.remove() }
   }, 'ui-theme: icon sprite')

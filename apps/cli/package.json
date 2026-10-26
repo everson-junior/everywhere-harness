@@ -19,6 +19,15 @@
     "lib/types/*.d.ts",
     "embedded-overrides/**"
   ],
+  "allowScripts": {
+    "@deepseek-ai/dsh-subprocess-local": true,
+    "koffi": true,
+    "node-pty": true,
+    "fs-ext": true,
+    "@google/genai": false,
+    "protobufjs": false,
+    "node-addon-require-builtin": false
+  },
   "license": "MIT",
   "dependencies": {
     "@deepseek-ai/cordis": "workspace:~",

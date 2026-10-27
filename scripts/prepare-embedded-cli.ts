@@ -42,6 +42,14 @@ const mappings: Array<{ source: string; target: string }> = [
     source: resolve(root, 'packages/client/ui-conversation/lib'),
     target: resolve(targetBase, 'dsh-client-ui-conversation/lib'),
   },
+  {
+    source: resolve(root, 'packages/client/ui-sidebar/lib'),
+    target: resolve(targetBase, 'dsh-client-ui-sidebar/lib'),
+  },
+  {
+    source: resolve(root, 'packages/client/ui-brand-official/lib'),
+    target: resolve(targetBase, 'dsh-client-ui-brand-official/lib'),
+  },
 ]
 
 function cleanUnneededFiles(dir: string): void {

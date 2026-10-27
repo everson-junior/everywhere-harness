@@ -118,6 +118,7 @@ Before pushing, follow [dsh-pre-push-checks](.agents/skills/dsh-pre-push-checks/
 - Never default to the full suite or repeat a passing check for commit or push. CI owns exhaustive coverage and the platform matrix; rehearse all locally only by explicit request, for CI diagnosis, or for an irreducibly repository-wide change.
 - `test:coverage`, not `test`, is the CI coverage gate ([why](docs/testing.md)).
 - Develop with `build:artifacts`; before claiming completion, run `build:check` after the latest `build:artifacts`, or `build` ([layout](docs/development.md#typescript-project-layout)).
+- **Embedded overrides for npm packages:** when modifying or adding UI components, client packages (`packages/client/*`), bundles, or themes, follow [ewh-validate-embedded-overrides](.agents/skills/ewh-validate-embedded-overrides/SKILL.md) to ensure every modified package is registered in `scripts/prepare-embedded-cli.ts` and synced to `apps/cli/embedded-overrides`.
 - **Web browser automation and GIF recording:** launch with `pnpm dsh web --patch apps/web/tests/pin-browse-picker.overlay.yml` to use the [in-page directory picker](apps/web/tests/pin-browse-picker.overlay.yml); omit this override only when testing native picker behavior explicitly.
 
 ## Secrets / .env

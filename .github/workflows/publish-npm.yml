@@ -1,17 +1,9 @@
-name: Publish to npm
+name: Publish npm package
 
 on:
   release:
     types: [published]
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to publish (leave blank to use tag or package.json version)'
-        required: false
-        type: string
 
 permissions:
   contents: read
@@ -19,84 +11,15 @@ permissions:
 
 jobs:
   publish:
-    name: Publish @everywhere-harness/ewh to npm
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v5.0.0
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7.0.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Configure pnpm store path
-        id: pnpm-store
-        run: |
-          store_root="$HOME/.local/share/pnpm/store"
-          echo "PNPM_CONFIG_STORE_DIR=$store_root" >> "$GITHUB_ENV"
-          store_path=$(PNPM_CONFIG_STORE_DIR="$store_root" pnpm store path --silent)
-          echo "path=$store_path" >> "$GITHUB_OUTPUT"
-
-      - name: Cache pnpm store
-        uses: actions/cache/restore@v6.1.0
-        with:
-          path: ${{ steps.pnpm-store.outputs.path }}
-          key: ${{ runner.os }}-node-24-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-node-24-pnpm-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Resolve version
-        run: |
-          TARGET_VERSION="${{ inputs.version }}"
-          if [ -z "$TARGET_VERSION" ]; then
-            if [ "${{ github.event_name }}" = "release" ]; then
-              TAG_NAME="${{ github.event.release.tag_name }}"
-            elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
-              TAG_NAME="${GITHUB_REF#refs/tags/}"
-            fi
-            if [ -n "$TAG_NAME" ]; then
-              TARGET_VERSION=$(echo "$TAG_NAME" | sed -E 's/^[^0-9]*([0-9]+\.[0-9]+\.[0-9]+.*)$/\1/')
-            fi
-          fi
-
-          if [ -n "$TARGET_VERSION" ]; then
-            echo "Updating @everywhere-harness/ewh version to $TARGET_VERSION"
-            export TARGET_VERSION
-            node -e "
-              const fs = require('node:fs');
-              const pkg = JSON.parse(fs.readFileSync('apps/cli/package.json', 'utf8'));
-              pkg.version = process.env.TARGET_VERSION;
-              fs.writeFileSync('apps/cli/package.json', JSON.stringify(pkg, null, 2) + '\n');
-            "
-          else
-            CURRENT=$(node -p "JSON.parse(require('node:fs').readFileSync('apps/cli/package.json', 'utf8')).version")
-            echo "Publishing existing version: $CURRENT"
-          fi
-
-      - name: Build Web Frontend and Client packages
-        run: |
-          pnpm run build:artifacts
-          pnpm exec tsx scripts/prepare-embedded-cli.ts
-
-      - name: Build CLI package
-        run: |
-          pnpm exec tsc -b apps/cli
-          pnpm --filter @everywhere-harness/ewh exec tsdown --config-loader tsx --env.DSH_BUILD_FACE host
-
-      - name: Publish package to npm
-        run: pnpm --filter @everywhere-harness/ewh publish --access public --no-git-checks
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm test
+      - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}

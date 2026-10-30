@@ -1,64 +1,65 @@
-# Everywhere Harness
+# @everywhere-harness/ewh
 
-Everywhere Harness (`ewh`) is an open-source, extensible AI agent harness built on an **everything-is-a-plugin** architecture and powered by [Cordis](https://github.com/cordiverse/cordis).
+`ewh` e um alias para o CLI oficial [`@deepseek-ai/dsh`](https://www.npmjs.com/package/@deepseek-ai/dsh). O pacote nao adiciona runtime, perfis, interface ou customizacoes proprias: todos os comandos e dependencias sao fornecidos pelo DeepSeek Harness oficial.
 
-## Quick Start
+## Inicio rapido
 
-### Run with `npm` / `npx`
-
-Requires `Node.js >= 24.9.0`:
+Execute a interface Web diretamente com `npx` (requer Node.js >= 24.9.0):
 
 ```sh
 npx @everywhere-harness/ewh web
 ```
 
-This starts the Web UI at `http://127.0.0.1:3080` and opens it in your default browser.
-
-To run without automatically opening the browser:
+Por padrao, o servidor inicia em `http://127.0.0.1:3080` e abre o navegador. Para iniciar sem abrir o navegador:
 
 ```sh
 npx @everywhere-harness/ewh web --no-open
 ```
 
-### Run from source
+## Instalacao global
 
 ```sh
-git clone https://github.com/everson-junior/everywhere-harness.git
-cd everywhere-harness
-pnpm install
-pnpm run build
-pnpm ewh web
+npm install -g @everywhere-harness/ewh
+ewh web
 ```
 
-- `pnpm run build` prepares the workspace artifacts.
-- `pnpm ewh web` launches the application from source.
+O comando `ewh` encaminha os argumentos, a entrada e saida do terminal, os sinais e o codigo de saida para o executavel oficial `dsh`.
 
-## Profiles & Capabilities
+## Comandos
 
-Everywhere Harness uses modular profiles to support different agent runtime environments:
+| Comando | Finalidade |
+|---|---|
+| `ewh web` | Inicia a interface Web e o backend local. |
+| `ewh <nome>` | Inicia um perfil em `$DSH_HOME/profiles/<nome>`. |
+| `ewh --profile <nome>` | Inicia explicitamente um perfil. |
+| `ewh --profile headless "tarefa"` | Executa uma sessao headless e imprime a resposta. |
+| `ewh --profile acp` | Inicia o servidor ACP por stdio. |
+| `ewh --profile sdk` | Inicia o servidor SDK por JSON-RPC em stdio. |
+| `ewh --profile sdk-minimal` | Inicia a composicao minima do SDK. |
+| `ewh plugin --profile <nome> <args>` | Gerencia plugins externos do perfil. |
+| `ewh --help` | Exibe a ajuda oficial do CLI. |
 
-- **Web Profile (`ewh web`)**: Interactive full-stack web chat and tool execution interface.
-- **Headless Profile (`ewh --profile headless "task"`)**: Executes an agent task in terminal/batch mode and exits with the result.
-- **ACP Profile (`ewh --profile acp`)**: Automation Client Protocol runner over stdio.
-- **SDK Profile (`ewh --profile sdk`)**: JSON-RPC interface for external integrations.
+Argumentos posteriores ao perfil sao encaminhados para a aplicacao selecionada:
 
-## Development
+```sh
+ewh web --port 8080
+ewh web --help
+ewh --profile headless "execute os testes"
+```
 
-For developers contributing to or extending Everywhere Harness:
+## Atualizacoes
 
-- Start with the [development guide](docs/development.md) and [architecture documentation](docs/architecture.md).
-- To run the development server with hot-reload:
-  ```sh
-  pnpm run dev:web
-  ```
+Cada versao deste pacote fixa uma versao do `@deepseek-ai/dsh`. Atualizar `@everywhere-harness/ewh` atualiza o runtime oficial usado pelo comando `ewh`:
 
-## Issues & Support
+```sh
+npm install -g @everywhere-harness/ewh@latest
+```
 
-- Submit issues or feature requests on [GitHub Issues](https://github.com/everson-junior/everywhere-harness/issues).
-- Pull requests are welcome!
+## Repositorio
 
-## License
+- [GitHub](https://github.com/everson-junior/everywhere-harness)
+- [Issues](https://github.com/everson-junior/everywhere-harness/issues)
+
+## Licenca
 
 [MIT](LICENSE)
-
-Third-party dependencies and their licenses are disclosed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

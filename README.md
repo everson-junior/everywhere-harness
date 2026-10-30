@@ -1,6 +1,14 @@
 # @everywhere-harness/ewh
 
-`ewh` e um alias para o CLI oficial [`@deepseek-ai/dsh`](https://www.npmjs.com/package/@deepseek-ai/dsh). O pacote nao adiciona runtime, perfis, interface ou customizacoes proprias: todos os comandos e dependencias sao fornecidos pelo DeepSeek Harness oficial.
+`ewh` e um alias para o CLI oficial [`@deepseek-ai/dsh`](https://www.npmjs.com/package/@deepseek-ai/dsh). Todos os comandos sao encaminhados para o CLI oficial. A instalacao tambem inclui estes pacotes complementares como dependencias npm diretas:
+
+- `@deepseek-ai/dsh-client-ui-plugin-market`
+- `@deepseek-ai/dsh-plugin-market`
+- `@everywhere-harness/plugin-providers`
+- `@everywhere-harness/preset-protheus`
+- `@everywhere-harness/client-ui-chat`
+
+A inclusao dessas dependencias nao altera, por si so, os comandos ou perfis do CLI oficial.
 
 ## Inicio rapido
 
